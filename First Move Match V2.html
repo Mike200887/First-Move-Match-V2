@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>First Move V10 Fast Food Chat</title>
+<style>
+:root{
+  --bg0:#07060d;--bg1:#0e0b1a;--card:rgba(255,255,255,.07);--border:rgba(255,255,255,.14);
+  --text:#f7f2ff;--dim:#aaa3c7;--pink:#ff2e93;--cyan:#00e5ff;--violet:#8a5cff;--good:#2ee6a8;--warn:#ffd166;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:
+radial-gradient(900px 520px at 85% -10%,rgba(138,92,255,.28),transparent 60%),
+radial-gradient(760px 480px at -10% 105%,rgba(255,46,147,.22),transparent 60%),
+linear-gradient(180deg,var(--bg0),var(--bg1));color:var(--text);overflow-x:hidden}
+body{touch-action:manipulation}button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}
+.app{max-width:480px;margin:0 auto;padding:18px 16px 90px;min-height:100vh}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.logo{font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}.phase{font-size:11px;color:var(--dim);border:1px solid var(--border);border-radius:999px;padding:6px 10px;background:var(--card)}
+.screen{display:none;animation:fade .25s ease}.screen.active{display:block}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:31px;line-height:1.08;margin:8px 0}h2{font-size:22px;margin:8px 0}p,small{color:var(--dim);line-height:1.45}p{font-size:14.5px}.card,.hero{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;margin-top:14px;backdrop-filter:blur(10px)}.hero{text-align:center;background:linear-gradient(135deg,rgba(255,46,147,.18),rgba(0,229,255,.12))}.grad{background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.input{width:100%;padding:14px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);font-size:16px;outline:none}.input:focus{border-color:var(--pink)}
+.btn{width:100%;min-height:52px;border:0;border-radius:15px;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--pink),var(--violet));margin-top:12px;box-shadow:0 12px 34px -14px rgba(255,46,147,.75)}.btn.cyan{background:linear-gradient(135deg,var(--cyan),var(--violet));color:#041018}.btn.good{background:linear-gradient(135deg,var(--good),var(--cyan));color:#041018}.btn.ghost{background:transparent;border:1px solid var(--border);box-shadow:none;color:var(--text)}.btn:disabled{opacity:.42;box-shadow:none}.btn:active{transform:scale(.98)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{padding:14px;border-radius:16px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);font-weight:800;text-align:left}.choice.selected{border-color:var(--pink);background:rgba(255,46,147,.16)}
+.profile-card{height:560px;border-radius:24px;border:1px solid var(--border);overflow:hidden;position:relative;background-size:cover;background-position:center;margin-top:12px}.profile-card:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.9))}.profile-info{position:absolute;z-index:2;left:18px;right:18px;bottom:18px}.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.badge{font-size:11px;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.16)}.actions{display:flex;gap:12px;margin-top:12px}.round{width:64px;height:64px;border-radius:50%;border:1px solid var(--border);background:rgba(255,255,255,.08);color:#fff;font-size:28px}.round.like{background:linear-gradient(135deg,var(--pink),var(--violet))}.round.nope{background:#24212d}.actions .btn{margin-top:0}
+.match-overlay{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(circle,rgba(138,92,255,.55),rgba(0,0,0,.96))}.match-overlay.show{display:flex}.faces{display:flex;justify-content:center;gap:14px;margin:18px 0}.face,.mini{background-size:cover;background-position:center;border-radius:50%;border:2px solid var(--pink)}.face{width:104px;height:104px}.face.cyan,.mini.cyan{border-color:var(--cyan)}.mini{width:40px;height:40px}
+.game{border:1px solid var(--border);border-radius:22px;overflow:hidden;background:#070515;margin-top:12px}.game-head{display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid var(--border);font-weight:800}.score{font-size:20px}canvas{display:block;width:100%;height:auto;background:#080519;touch-action:none}.game-foot{text-align:center;padding:10px;color:var(--dim);font-size:12px;border-top:1px solid var(--border)}
+.chat-head{display:flex;gap:10px;align-items:center;margin:8px 0 12px}.chat-box{height:360px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid var(--border);border-radius:18px;background:var(--card)}.bubble{max-width:82%;padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.35}.me{align-self:flex-end;background:linear-gradient(135deg,var(--pink),var(--violet));color:white;border-top-right-radius:4px}.them{align-self:flex-start;background:rgba(255,255,255,.1);border-top-left-radius:4px}.ref{align-self:center;max-width:95%;text-align:center;color:var(--cyan);background:rgba(0,229,255,.08);border:1px dashed rgba(0,229,255,.5)}.chat-input{display:flex;gap:8px;margin-top:10px}.chat-input input{flex:1}.chat-input button{width:96px;margin-top:0}.meter{display:flex;justify-content:space-between;color:var(--dim);font-size:12px;margin-top:8px}
+.mem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.mem{aspect-ratio:3/4;border-radius:13px;border:1px solid var(--border);background:linear-gradient(135deg,var(--pink),var(--violet));color:white;font-size:28px;font-weight:900}.mem.open,.mem.done{background:rgba(255,255,255,.1)}.mem.done{border-color:var(--good);color:var(--good)}
+.media-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.media{font-size:12px;font-weight:800;border:1px solid rgba(0,229,255,.45);background:rgba(0,229,255,.09);color:var(--cyan);border-radius:999px;padding:8px 10px}.date-slot{padding:14px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.05);margin-top:10px;text-align:left;color:var(--text)}.date-slot.selected{border-color:var(--cyan);background:rgba(0,229,255,.12)}
+.reset{position:fixed;right:12px;top:12px;z-index:40;border:1px solid var(--border);background:rgba(255,255,255,.08);color:var(--dim);border-radius:999px;padding:7px 10px;font-size:11px}.center{text-align:center}.hidden{display:none}
+
+.photo-upload{
+  border:1px dashed rgba(255,255,255,.25);
+  border-radius:18px;
+  padding:14px;
+  background:rgba(255,255,255,.04);
+  margin-top:12px;
+}
+.photo-preview{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+.photo-thumb{
+  aspect-ratio:1/1.25;
+  border-radius:14px;
+  background-size:cover;
+  background-position:center;
+  border:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+}
+.photo-thumb button{
+  position:absolute;
+  right:5px;
+  top:5px;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  border:0;
+  background:rgba(0,0,0,.65);
+  color:white;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.upload-label{
+  display:block;
+  text-align:center;
+  padding:14px;
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(255,46,147,.22),rgba(0,229,255,.12));
+  border:1px solid var(--border);
+  font-weight:800;
+  color:var(--text);
+}
+.photo-count{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:8px;
+  font-size:12px;
+  color:var(--dim);
+}
+.profile-card.clean-img{
+  background-image:none !important;
+  background:#111;
+}
+.profile-card.clean-img .profile-photo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  z-index:0;
+}
+.profile-card.clean-img .photo-dots{
+  position:absolute;
+  top:10px;
+  left:12px;
+  right:12px;
+  display:flex;
+  gap:5px;
+  z-index:3;
+}
+.profile-card.clean-img .photo-dot{
+  flex:1;
+  height:4px;
+  border-radius:999px;
+  background:rgba(255,255,255,.25);
+}
+.profile-card.clean-img .photo-dot.active{
+  background:#fff;
+}
+.tap-hint{
+  position:absolute;
+  top:24px;
+  right:18px;
+  z-index:4;
+  font-size:11px;
+  color:white;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.18);
+  padding:6px 9px;
+  border-radius:999px;
+}
+.group-info{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:10px 0;
+}
+.group-pill{
+  font-size:12px;
+  font-weight:800;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.06);
+  border-radius:999px;
+  padding:8px 10px;
+  color:var(--text);
+}
+.group-pill.me{
+  border-color:rgba(255,46,147,.55);
+  background:rgba(255,46,147,.10);
+}
+.group-pill.them{
+  border-color:rgba(0,229,255,.55);
+  background:rgba(0,229,255,.10);
+}
+.air-note{
+  color:var(--cyan);
+  font-weight:800;
+}
+.mode-row{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
+.mode-card{border:1px solid var(--border);border-radius:18px;padding:14px;background:rgba(255,255,255,.045)}
+.mode-card h3{margin:0 0 6px;font-size:17px}.mode-card p{margin:0;font-size:13px}
+.dopamine-card{text-align:center;background:radial-gradient(420px 260px at 50% 0%,rgba(255,46,147,.24),transparent 70%),rgba(255,255,255,.055)}
+.dopamine-result{min-height:92px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:18px;border:1px solid var(--border);background:rgba(255,255,255,.045);margin-top:12px;padding:14px}
+.dopamine-result.good{border-color:rgba(46,230,168,.65);background:rgba(46,230,168,.11)}
+.dopamine-result.bad{border-color:rgba(255,209,102,.55);background:rgba(255,209,102,.08)}
+.dopamine-result h2{margin:0}.dopamine-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat-box{border:1px solid var(--border);border-radius:14px;padding:10px 6px;background:rgba(255,255,255,.045);text-align:center}
+.stat-box b{display:block;font-size:20px;color:var(--text)}.stat-box small{font-size:11px}
+.locked-note{font-size:12px;color:var(--warn);margin-top:8px}
+.mode-card.main-mode{
+  border-color:rgba(46,230,168,.65);
+  background:
+    radial-gradient(420px 220px at 50% 0%,rgba(46,230,168,.18),transparent 70%),
+    rgba(255,255,255,.055);
+  box-shadow:0 18px 48px -28px rgba(46,230,168,.9);
+}
+.mode-card.secondary-mode{
+  opacity:.86;
+  border-style:dashed;
+}
+.mode-label{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  font-weight:900;
+  padding:5px 8px;
+  border-radius:999px;
+  margin-bottom:8px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.06);
+}
+.mode-label.good{
+  color:var(--good);
+  border-color:rgba(46,230,168,.55);
+  background:rgba(46,230,168,.09);
+}
+.mode-label.fast{
+  color:var(--warn);
+  border-color:rgba(255,209,102,.55);
+  background:rgba(255,209,102,.08);
+}
+.fastfood-card{
+  text-align:center;
+  background:
+    radial-gradient(420px 260px at 50% 0%,rgba(255,209,102,.20),transparent 70%),
+    rgba(255,255,255,.055);
+}
+.expire-box{
+  border:1px solid rgba(255,209,102,.55);
+  background:rgba(255,209,102,.08);
+  border-radius:16px;
+  padding:12px;
+  margin:10px 0;
+}
+.expire-box b{
+  color:var(--warn);
+}
+.fast-media-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:10px 0;
+}
+.fast-media{
+  font-size:12px;
+  font-weight:800;
+  border:1px solid rgba(255,209,102,.45);
+  background:rgba(255,209,102,.08);
+  color:var(--warn);
+  border-radius:999px;
+  padding:8px 10px;
+}
+</style>
+</head>
+<body>
+<button class="reset" onclick="resetDemo()">Reset</button>
+<div class="app">
+  <div class="top"><div class="logo">FIRST MOVE V10</div><div class="phase" id="phase">Start</div></div>
+
+  <section class="screen active" id="onboarding">
+    <div class="hero"><h1>Schnelles Dopamin<br>oder <span class="grad">echtes Kennenlernen?</span></h1><p>Du entscheidest: oberflächlicher Fast-Food-Modus für schnelle Matches oder der echte First-Move-Modus, bei dem man sich durch Spiele kennenlernt.</p></div>
+    <div class="card">
+      <p><b style="color:var(--text)">Deine Fotos</b></p>
+      <div class="photo-upload">
+        <label class="upload-label" for="photoInput">📷 Fotos hochladen · max. 6</label>
+        <input id="photoInput" type="file" accept="image/*" multiple hidden />
+        <div class="photo-count">
+          <span>Mindestens 1 Foto nötig</span>
+          <span><span id="photoCount">0</span>/6</span>
+        </div>
+        <div class="photo-preview" id="photoPreview"></div>
+      </div>
+
+      <p><b style="color:var(--text)">Dein Name</b></p><input class="input" id="nameInput" placeholder="z.B. Mike" />
+      <p><b style="color:var(--text)">Alter</b></p><input class="input" id="ageInput" type="number" inputmode="numeric" placeholder="18 - 99" />
+
+      <p><b style="color:var(--text)">Du bist...</b></p>
+      <div class="grid2" id="genderGrid"><button class="choice" data-value="m">Mann</button><button class="choice" data-value="w">Frau</button><button class="choice" data-value="d">Divers</button><button class="choice" data-value="x">Sag ich nicht</button></div>
+      <p><b style="color:var(--text)">Du suchst...</b></p>
+      <div class="grid2" id="prefGrid"><button class="choice" data-value="w">Frauen</button><button class="choice" data-value="m">Männer</button><button class="choice" data-value="all">Alle</button><button class="choice" data-value="x">Mal sehen</button></div>
+      <div class="mode-row">
+        <div class="mode-card main-mode">
+          <span class="mode-label good">⭐ Empfohlen</span>
+          <h3>🎮 Richtig kennenlernen</h3>
+          <p>Der eigentliche First-Move-Modus: Match, Spiel, begrenzter Chat, zweites Date, Memory, privater Chat. Weniger oberflächlich, mehr echte Dynamik.</p>
+          <button class="btn good" id="startBtn" disabled>Richtig kennenlernen starten</button>
+        </div>
+
+        <div class="mode-card secondary-mode">
+          <span class="mode-label fast">🍟 Nebenmodus</span>
+          <h3>Fast Food Dopamin</h3>
+          <p>Der klassische Swipe-Modus: schnell matchen, direkt schreiben, Fotos, Videos und Sprachnachrichten schicken. Aber ohne Spiel-Dynamik. Keine Interaktion? Match verschwindet nach 24 Stunden.</p>
+          <button class="btn ghost" id="matchCheckBtn" disabled>Fast Food Dopamin starten</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="profiles">
+    <small>Demo: Tippe auf Like, um ein Match zu erzeugen.</small>
+    <div class="profile-card clean-img" id="profileCard" onclick="openProfileDetails()"></div>
+    <div class="actions"><button class="round nope" onclick="nextProfile()">×</button><button class="btn ghost" onclick="openProfileDetails()">Profil ansehen</button><button class="round like" onclick="likeProfile()">♥</button></div>
+  </section>
+
+  <section class="screen" id="matchCheck">
+    <div class="card fastfood-card">
+      <small>Oberflächlicher Nebenmodus · klassischer Swipe-Chat</small>
+      <h1>🍟 Fast Food Dopamin</h1>
+      <p>Schnell matchen, direkt schreiben, Medien schicken. Aber: Ohne Interaktion verschwindet das Match nach 24 Stunden. Wer sich wirklich kennenlernen will, nutzt den Spiel-Modus.</p>
+    </div>
+    <div class="profile-card clean-img" id="matchCheckCard" onclick="openMatchCheckDetails()"></div>
+    <div class="actions">
+      <button class="round nope" onclick="matchCheckNope()">×</button>
+      <button class="btn ghost" onclick="openMatchCheckDetails()">Profil ansehen</button>
+      <button class="round like" onclick="matchCheckLike()">♥</button>
+    </div>
+    <div class="dopamine-result" id="matchCheckResult">
+      <p>Noch kein Like. Like ein Profil — bei Match öffnet sich der schnelle Chat.</p>
+    </div>
+    <div class="dopamine-stats">
+      <div class="stat-box"><b id="mcSeen">0</b><small>gesehen</small></div>
+      <div class="stat-box"><b id="mcLikes">0</b><small>Likes</small></div>
+      <div class="stat-box"><b id="mcMatches">0</b><small>Matches</small></div>
+    </div>
+    <button class="btn cyan" onclick="startRealFlowFromCheck()">Zum richtigen Kennenlern-Modus wechseln</button>
+  </section>
+
+  <section class="screen" id="matchCheckDetails">
+    <button class="btn ghost" onclick="show('matchCheck')">← Zurück</button>
+    <div class="profile-card clean-img" id="matchCheckDetailCard" onclick="nextMatchCheckPhoto()"></div>
+    <div class="card">
+      <h2 id="matchCheckDetailName"></h2>
+      <p id="matchCheckDetailBio"></p>
+      <div class="badges" id="matchCheckDetailTags"></div>
+      <p class="locked-note">🍟 Fast Food Dopamin: Bei Match kannst du direkt schreiben und Medien schicken. Ohne Interaktion verschwindet es nach 24 Stunden.</p>
+    </div>
+    <div class="grid2">
+      <button class="btn ghost" onclick="matchCheckNope();show('matchCheck')">Nope</button>
+      <button class="btn" onclick="matchCheckLike();show('matchCheck')">Dopamin checken</button>
+    </div>
+  </section>
+
+  <section class="screen" id="fastFoodChat">
+    <div class="chat-head">
+      <div class="mini cyan" id="fastFoodFace"></div>
+      <div>
+        <h2 id="fastFoodTitle">Fast Food Chat</h2>
+        <small style="color:var(--warn)">Oberflächlicher Chat · läuft bei keiner Interaktion nach 24h ab</small>
+      </div>
+    </div>
+    <div class="expire-box">
+      <b>⏳ 24h-Regel:</b>
+      <span id="fastFoodTimer"> Match verschwindet nach 24 Stunden ohne Interaktion.</span>
+    </div>
+    <div class="fast-media-row">
+      <span class="fast-media">📷 Foto</span>
+      <span class="fast-media">🎥 Video</span>
+      <span class="fast-media">🎙️ Sprache</span>
+      <span class="fast-media">⚡ Schnell treffen</span>
+    </div>
+    <div class="chat-box" id="fastFoodChatBox"></div>
+    <div class="chat-input">
+      <input class="input" id="fastFoodInput" placeholder="Schnell schreiben..." maxlength="200" />
+      <button class="btn" onclick="sendFastFoodChat()">Senden</button>
+    </div>
+    <button class="btn ghost" onclick="demoFastFoodExpire()">Demo: 24h ohne Interaktion</button>
+    <button class="btn good" onclick="show('profiles')">Zum richtigen Kennenlern-Modus wechseln</button>
+  </section>
+
+  <section class="screen" id="profileDetails">
+    <button class="btn ghost" onclick="show('profiles')">← Zurück</button>
+    <div class="profile-card clean-img" id="detailCard" onclick="nextDetailPhoto()"></div>
+    <div class="card"><h2 id="detailName"></h2><p id="detailBio"></p><div class="badges" id="detailTags"></div></div>
+    <div class="grid2"><button class="btn ghost" onclick="nextProfile();show('profiles')">Nope</button><button class="btn" onclick="likeProfile()">Like</button></div>
+  </section>
+
+  <section class="screen" id="pongIntro">
+    <div class="card center"><small>Match!</small><h1>Erstes Date: Pong</h1><p>Ihr spielt zuerst gegeneinander. Danach startet der limitierte Chat.</p><button class="btn cyan" onclick="show('pong')">Pong starten</button></div>
+  </section>
+
+  <section class="screen" id="pong">
+    <h2>Pong gegeneinander</h2><p>Demo: Du spielst unten, dein Match oben. Erste Person mit 3 Punkten gewinnt.</p>
+    <div class="game"><div class="game-head"><span>Du <span class="score" id="pongMeScore">0</span></span><span><span class="score" id="pongThemScore">0</span> <span id="pongThemName">Match</span></span></div><canvas id="pongCanvas" width="400" height="500"></canvas><div class="game-foot">Finger oder Maus unten bewegen.</div></div>
+  </section>
+
+  <section class="screen" id="firstChat">
+    <div class="chat-head"><div class="mini cyan" id="chatFace"></div><div><h2 id="chatTitle">Match</h2><small>Erster Chat · 15 Nachrichten je Person</small></div></div>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="chat-input"><input class="input" id="chatInput" placeholder="Schreib was..." maxlength="200" /><button class="btn" onclick="sendFirstChat()">Senden</button></div>
+    <div class="meter"><span>Du: <span id="myMsgCount">0</span>/15</span><span>Match: <span id="theirMsgCount">0</span>/15</span></div>
+    <button class="btn ghost" onclick="finishFirstChat()">Demo: Chatlimit erreichen</button>
+  </section>
+
+  <section class="screen" id="decision">
+    <div class="card center"><small>Nach 15 Nachrichten je Person</small><h1>Wie geht es weiter?</h1><p>Jetzt entscheidet ihr: im Chat bleiben oder ein nächstes Date planen.</p>
+      <button class="btn good" onclick="goFullChat()">Im Chat bleiben</button>
+      <button class="btn cyan" onclick="show('scheduleDate')">Nächstes Date ausmachen</button>
+    </div>
+  </section>
+
+  <section class="screen" id="scheduleDate">
+    <div class="card"><small>Nächstes Date</small><h1>Termin auswählen</h1><p>Zu dieser Zeit kommt ihr wieder rein und spielt zusammen Memory.</p>
+      <button class="date-slot" onclick="selectSlot(this,'Heute 20:30 Uhr')">Heute 20:30 Uhr</button>
+      <button class="date-slot" onclick="selectSlot(this,'Morgen 19:00 Uhr')">Morgen 19:00 Uhr</button>
+      <button class="date-slot" onclick="selectSlot(this,'Morgen 21:30 Uhr')">Morgen 21:30 Uhr</button>
+      <button class="btn cyan" id="confirmSlot" disabled onclick="confirmDate()">Date bestätigen</button>
+    </div>
+  </section>
+
+  <section class="screen" id="waitingDate">
+    <div class="card center"><small>Date geplant</small><h1 id="plannedTime">Morgen</h1><p>Das ist der positive Dopamin-Anker: kein offenes Ende, sondern ein klarer nächster Termin.</p><button class="btn cyan" onclick="show('memoryIntro')">Demo: Zum Date springen</button></div>
+  </section>
+
+  <section class="screen" id="memoryIntro">
+    <div class="card center"><small>Zweites Date</small><h1>Memory zusammen</h1><p>Beide müssen zustimmen. In der Demo stimmt dein Match zu.</p><button class="btn cyan" onclick="show('memory')">Memory starten</button></div>
+  </section>
+
+  <section class="screen" id="memory">
+    <h2>Memory-Date</h2><p>Findet alle Paare. Danach wird der volle Chat freigeschaltet.</p>
+    <div class="card"><div class="mem-grid" id="memoryGrid"></div><p>Paare: <span id="pairsFound">0</span>/6 · Versuche: <span id="tries">0</span></p></div>
+  </section>
+
+  <section class="screen" id="afterMemoryChoice">
+    <div class="card center"><small>Memory geschafft</small><h1>Was jetzt?</h1><p>Jetzt ist genug Vertrauen entstanden: voller privater Chat oder zusammen in die 2vs2-Arena.</p><button class="btn good" onclick="goFullChat()">Privater Chat freischalten</button><button class="btn cyan" onclick="show('arenaIntro')">In die 2vs2-Arena</button></div>
+  </section>
+
+  <section class="screen" id="fullChat">
+    <div class="chat-head"><div class="mini cyan" id="fullChatFace"></div><div><h2 id="fullChatTitle">Privater Chat</h2><small style="color:var(--good)">Foto, Video & Sprachnachrichten freigeschaltet</small></div></div>
+    <div class="media-row"><span class="media">📷 Foto</span><span class="media">🎥 Video</span><span class="media">🎙️ Sprache</span><span class="media">📍 Date planen</span></div>
+    <div class="chat-box" id="fullChatBox"></div>
+    <div class="chat-input"><input class="input" id="fullChatInput" placeholder="Schreib frei weiter..." maxlength="200" /><button class="btn" onclick="sendFullChat()">Senden</button></div>
+    <button class="btn cyan" onclick="show('arenaIntro')">Zusammen in die 2vs2-Arena</button>
+  </section>
+
+  <section class="screen" id="arenaIntro">
+    <div class="card center"><small>2vs2-Raum</small><h1>Air Hockey / Pong</h1><p>Einer spielt, der andere feuert an. Ihr seid als Team gegen ein anderes Match.</p><button class="btn cyan" onclick="show('airhockey')">Air Hockey starten</button></div>
+  </section>
+
+  <section class="screen" id="airhockey">
+    <h2>2vs2 Air Hockey</h2><p>Du steuerst den runden Schläger unten. Dein Match feuert dich an. Ziel: Puck ins gegnerische Tor schießen. Erste auf 5 Punkte gewinnt.</p>
+    <div class="game"><div class="game-head"><span>Team Du <span class="score" id="hockeyMeScore">0</span></span><span><span class="score" id="hockeyThemScore">0</span> Gegner</span></div><canvas id="hockeyCanvas" width="400" height="540"></canvas><div class="game-foot" id="hockeyComment">Zieh den runden Schläger unten. Ziel ist das Tor oben.</div></div>
+  </section>
+
+  <section class="screen" id="aftergame">
+    <h2>Aftergame 4er Chat</h2>
+    <p>Kurzer Gruppenchat nach dem Spiel. Ihr könnt euch austauschen, lachen, lästern und danach wieder privat weiterschreiben.</p>
+    <div class="group-info">
+      <span class="group-pill me">Du</span>
+      <span class="group-pill them" id="groupMatchName">Match</span>
+      <span class="group-pill">Nina</span>
+      <span class="group-pill">Tom</span>
+    </div>
+    <div class="chat-box" id="aftergameBox"></div>
+    <div class="chat-input"><input class="input" id="aftergameInput" placeholder="In den 4er-Chat schreiben..." maxlength="200" /><button class="btn" onclick="sendAftergame()">Senden</button></div>
+    <button class="btn cyan" onclick="show('fullChat')">Zurück in den privaten Chat</button>
+  </section>
+</div>
+
+<div class="match-overlay" id="matchOverlay"><div><small>IT'S A MATCH</small><h1><span class="grad">FIRST MOVE!</span></h1><div class="faces"><div class="face" id="meFace"></div><div class="face cyan" id="themFace"></div></div><p>Kein leeres Match. Ihr startet direkt mit Pong.</p><button class="btn cyan" onclick="closeMatch()">Weiter</button></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+function avatar(seed,c1,c2,label){
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560"><defs><linearGradient id="g${seed}" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="400" height="560" fill="url(#g${seed})"/><circle cx="200" cy="230" r="125" fill="rgba(255,255,255,.13)"/><text x="200" y="275" font-size="120" text-anchor="middle" fill="white" font-family="Arial" font-weight="900">${label}</text></svg>`);
+}
+function gallery(seed,c1,c2,label){return[avatar(seed+'1',c1,c2,label),avatar(seed+'2',c2,c1,label+'2'),avatar(seed+'3','#111827',c1,label)]}
+
+const profiles=[
+{name:'Mara',age:27,city:'Stuttgart',gender:'w',bio:'Mag Kletterhallen, schlechte Wortwitze und Pesto auf allem. Sucht jemanden, der nicht nur schreibt, sondern auch mitzieht.',tags:['Kaffee','Klettern','Kreativ'],photos:gallery('mara','#ff2e93','#8a5cff','M')},
+{name:'Lina',age:24,city:'Böblingen',gender:'w',bio:'Brettspielabende, kalte Pizza zum Frühstück und Menschen, die nicht direkt alles so ernst nehmen.',tags:['Boardgames','Pizza','Hund'],photos:gallery('lina','#ff7eb6','#ff2e93','L')},
+{name:'Yara',age:29,city:'Stuttgart',gender:'w',bio:'Yoga tagsüber, Ramen-Hunterin abends. Bonuspunkte für spontane Pläne.',tags:['Yoga','Ramen','Vegi'],photos:gallery('yara','#8a5cff','#00e5ff','Y')},
+{name:'Jonas',age:28,city:'Stuttgart',gender:'m',bio:'Pasta-Maximalist, mittelgut auf dem Skateboard. Kann verlieren, aber nicht leise.',tags:['Skate','Pasta','Techno'],photos:gallery('jonas','#00e5ff','#8a5cff','J')},
+{name:'Felix',age:26,city:'Esslingen',gender:'m',bio:'Musik, schlechte Witze und gute Cocktails. Suche jemanden, der beim Spiel nicht komplett einknickt.',tags:['Gitarre','Karaoke','Cocktails'],photos:gallery('felix','#ff7eb6','#00e5ff','F')}
+];
+profiles.forEach(p=>p.avatar=p.photos[0]);
+
+const state={
+  name:'',
+  age:null,
+  gender:null,
+  pref:null,
+  photos:[],
+  queue:[],
+  index:0,
+  current:null,
+  currentPhoto:0,
+  match:null,
+  selectedSlot:null,
+  myMessages:0,
+  theirMessages:0,
+  fullSeeded:false,
+  matchCheckIndex:0,
+  matchCheckCurrent:null,
+  matchCheckPhoto:0,
+  matchCheckStats:{seen:0,likes:0,matches:0},
+  fastFoodMatch:null,
+  fastFoodChatSeeded:false,
+  fastFoodInteracted:false
+};
+
+let pong=null,hockey=null,memory=null;
+
+const phaseNames={
+  onboarding:'Start',
+  profiles:'Profile',
+  matchCheck:'Fast Food',
+  matchCheckDetails:'Fast Food Profil',
+  fastFoodChat:'Fast Food Chat',
+  profileDetails:'Profil',
+  pongIntro:'Match',
+  pong:'Pong',
+  firstChat:'15er Chat',
+  decision:'Entscheidung',
+  scheduleDate:'Termin',
+  waitingDate:'Warten',
+  memoryIntro:'Memory Date',
+  memory:'Memory',
+  afterMemoryChoice:'Freischaltung',
+  fullChat:'Privater Chat',
+  arenaIntro:'2vs2',
+  airhockey:'Air Hockey',
+  aftergame:'Aftergame'
+};
+
+function show(id){
+  if(pong)pong.running=false;
+  if(hockey)hockey.running=false;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  $('phase').textContent=phaseNames[id]||id;
+  window.scrollTo({top:0,behavior:'instant'});
+  if(id==='profiles')renderProfileCard();
+  if(id==='matchCheck')renderMatchCheckCard();
+  if(id==='matchCheckDetails')renderMatchCheckDetails();
+  if(id==='fastFoodChat')seedFastFoodChat();
+  if(id==='profileDetails')renderDetails();
+  if(id==='pong')startPong();
+  if(id==='firstChat')seedFirstChat();
+  if(id==='memory')buildMemory();
+  if(id==='fullChat')seedFullChat();
+  if(id==='airhockey')startHockey();
+  if(id==='aftergame')seedAftergame();
+}
+
+function setupChoiceGrid(grid,key){
+  document.querySelectorAll('#'+grid+' .choice').forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll('#'+grid+' .choice').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state[key]=btn.dataset.value;
+      checkStart();
+    };
+  });
+}
+setupChoiceGrid('genderGrid','gender');
+setupChoiceGrid('prefGrid','pref');
+
+$('photoInput').addEventListener('change',function(e){
+  const files=Array.from(e.target.files);
+  const remainingSlots=6-state.photos.length;
+
+  if(remainingSlots<=0){
+    alert('Du kannst maximal 6 Fotos hochladen.');
+    return;
+  }
+
+  const selectedFiles=files.slice(0,remainingSlots);
+
+  if(files.length>remainingSlots){
+    alert(`Es wurden nur ${remainingSlots} weitere Foto(s) hinzugefügt. Maximal sind 6 erlaubt.`);
+  }
+
+  selectedFiles.forEach(file=>{
+    if(!file.type.startsWith('image/'))return;
+
+    const reader=new FileReader();
+
+    reader.onload=function(event){
+      state.photos.push(event.target.result);
+      renderPhotoPreview();
+      checkStart();
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  e.target.value='';
+});
+
+function renderPhotoPreview(){
+  const preview=$('photoPreview');
+  preview.innerHTML='';
+  $('photoCount').textContent=state.photos.length;
+
+  state.photos.forEach((src,index)=>{
+    const div=document.createElement('div');
+    div.className='photo-thumb';
+    div.style.backgroundImage=`url('${src}')`;
+
+    const remove=document.createElement('button');
+    remove.textContent='×';
+    remove.type='button';
+    remove.onclick=()=>{
+      state.photos.splice(index,1);
+      renderPhotoPreview();
+      checkStart();
+    };
+
+    div.appendChild(remove);
+    preview.appendChild(div);
+  });
+}
+
+$('nameInput').oninput=e=>{
+  state.name=e.target.value.trim();
+  checkStart();
+};
+
+$('ageInput').oninput=e=>{
+  state.age=parseInt(e.target.value,10);
+  checkStart();
+};
+
+function checkStart(){
+  const ready = (
+    state.name.length>=2 &&
+    state.age>=18 &&
+    state.age<=99 &&
+    state.gender &&
+    state.pref &&
+    state.photos.length>=1
+  );
+
+  $('startBtn').disabled = !ready;
+  $('matchCheckBtn').disabled = !ready;
+}
+
+$('startBtn').onclick=()=>{
+  let pool=profiles.filter(p=>state.pref==='all'||state.pref==='x'||p.gender===state.pref);
+  if(pool.length===0){
+    alert('Für diese Auswahl gibt es in der Demo gerade keine Profile. Wähle bitte „Alle“ oder „Mal sehen“.');
+    return;
+  }
+  state.queue=pool.sort(()=>Math.random()-.5);
+  state.index=0;
+  show('profiles');
+};
+
+$('matchCheckBtn').onclick=()=>{
+  let pool=profiles.filter(p=>state.pref==='all'||state.pref==='x'||p.gender===state.pref);
+  if(pool.length===0){
+    alert('Für diese Auswahl gibt es in der Demo gerade keine Profile. Wähle bitte „Alle“ oder „Mal sehen“.');
+    return;
+  }
+  state.queue=pool.sort(()=>Math.random()-.5);
+  state.matchCheckIndex=0;
+  state.matchCheckPhoto=0;
+  state.matchCheckStats={seen:0,likes:0,matches:0};
+  updateMatchCheckStats();
+  show('matchCheck');
+};
+
+function currentProfile(){
+  return state.queue[state.index%state.queue.length];
+}
+
+function photoDots(total,active){
+  return `<div class="photo-dots">${Array.from({length:total}).map((_,i)=>`<span class="photo-dot ${i===active?'active':''}"></span>`).join('')}</div>`;
+}
+
+function renderProfileCard(){
+  const p=currentProfile();
+  if(!p)return;
+  state.current=p;
+  state.currentPhoto=0;
+  const photo=p.photos[0]||p.avatar;
+  $('profileCard').classList.add('clean-img');
+  $('profileCard').innerHTML=`
+    <img class="profile-photo" src="${photo}" alt="${p.name}">
+    ${photoDots(p.photos.length,0)}
+    <div class="tap-hint">Tippen = Profil</div>
+    <div class="profile-info">
+      <h1>${p.name}, ${p.age}</h1>
+      <p>${p.city} · ${p.bio}</p>
+      <div class="badges">${p.tags.map(t=>`<span class="badge">${t}</span>`).join('')}</div>
+    </div>`;
+}
+
+function nextProfile(){
+  state.index=(state.index+1)%state.queue.length;
+  renderProfileCard();
+}
+
+function openProfileDetails(){
+  state.current=currentProfile();
+  state.currentPhoto=0;
+  show('profileDetails');
+}
+
+function renderDetails(){
+  const p=state.current;
+  if(!p)return;
+  const photo=p.photos[state.currentPhoto]||p.avatar;
+  $('detailCard').classList.add('clean-img');
+  $('detailCard').innerHTML=`
+    <img class="profile-photo" src="${photo}" alt="${p.name}">
+    ${photoDots(p.photos.length,state.currentPhoto)}
+    <div class="tap-hint">Bild wechseln</div>
+    <div class="profile-info">
+      <h1>${p.name}, ${p.age}</h1>
+      <p>${p.city} · Bild ${state.currentPhoto+1}/${p.photos.length}</p>
+    </div>`;
+  $('detailName').textContent=p.name+', '+p.age;
+  $('detailBio').textContent=p.bio;
+  $('detailTags').innerHTML=p.tags.map(t=>`<span class="badge">${t}</span>`).join('');
+}
+
+function nextDetailPhoto(){
+  state.currentPhoto=(state.currentPhoto+1)%state.current.photos.length;
+  renderDetails();
+}
+
+function currentMatchCheckProfile(){
+  if(!state.queue.length)return null;
+  return state.queue[state.matchCheckIndex%state.queue.length];
+}
+
+function renderMatchCheckCard(){
+  const p=currentMatchCheckProfile();
+  if(!p)return;
+  state.matchCheckCurrent=p;
+  state.matchCheckPhoto=0;
+  const photo=p.photos[0]||p.avatar;
+
+  $('matchCheckCard').classList.add('clean-img');
+  $('matchCheckCard').innerHTML=`
+    <img class="profile-photo" src="${photo}" alt="${p.name}">
+    ${photoDots(p.photos.length,0)}
+    <div class="tap-hint">Fast Food</div>
+    <div class="profile-info">
+      <h1>${p.name}, ${p.age}</h1>
+      <p>${p.city} · ${p.bio}</p>
+      <div class="badges">${p.tags.map(t=>`<span class="badge">${t}</span>`).join('')}</div>
+    </div>`;
+}
+
+function openMatchCheckDetails(){
+  state.matchCheckCurrent=currentMatchCheckProfile();
+  state.matchCheckPhoto=0;
+  show('matchCheckDetails');
+}
+
+function renderMatchCheckDetails(){
+  const p=state.matchCheckCurrent||currentMatchCheckProfile();
+  if(!p)return;
+
+  const photo=p.photos[state.matchCheckPhoto]||p.avatar;
+  $('matchCheckDetailCard').classList.add('clean-img');
+  $('matchCheckDetailCard').innerHTML=`
+    <img class="profile-photo" src="${photo}" alt="${p.name}">
+    ${photoDots(p.photos.length,state.matchCheckPhoto)}
+    <div class="tap-hint">Bild wechseln</div>
+    <div class="profile-info">
+      <h1>${p.name}, ${p.age}</h1>
+      <p>${p.city} · Bild ${state.matchCheckPhoto+1}/${p.photos.length}</p>
+    </div>`;
+
+  $('matchCheckDetailName').textContent=p.name+', '+p.age;
+  $('matchCheckDetailBio').textContent=p.bio;
+  $('matchCheckDetailTags').innerHTML=p.tags.map(t=>`<span class="badge">${t}</span>`).join('');
+}
+
+function nextMatchCheckPhoto(){
+  const p=state.matchCheckCurrent||currentMatchCheckProfile();
+  if(!p)return;
+  state.matchCheckPhoto=(state.matchCheckPhoto+1)%p.photos.length;
+  renderMatchCheckDetails();
+}
+
+function matchCheckNope(){
+  state.matchCheckStats.seen++;
+  state.matchCheckIndex=(state.matchCheckIndex+1)%state.queue.length;
+  $('matchCheckResult').className='dopamine-result';
+  $('matchCheckResult').innerHTML='<p>Weiter. Kein Chat, keine Tiefe, nur der nächste schnelle Impuls.</p>';
+  updateMatchCheckStats();
+  renderMatchCheckCard();
+}
+
+function matchCheckLike(){
+  const p=currentMatchCheckProfile();
+  if(!p)return;
+
+  state.matchCheckStats.seen++;
+  state.matchCheckStats.likes++;
+
+  // Demo-Logik: ungefähr 42% Match-Wahrscheinlichkeit, damit der Fast-Food-Dopamin-Modus wie ein variabler Reward wirkt.
+  const didMatch=Math.random()<0.42;
+
+  if(didMatch){
+    state.matchCheckStats.matches++;
+    state.fastFoodMatch=p;
+    state.fastFoodChatSeeded=false;
+    state.fastFoodInteracted=false;
+    $('matchCheckResult').className='dopamine-result good';
+    $('matchCheckResult').innerHTML=`<div><h2>🔥 Match!</h2><p>Du und ${p.name} habt gematcht. Fast-Food-Chat wird geöffnet.</p></div>`;
+    updateMatchCheckStats();
+    setTimeout(()=>show('fastFoodChat'),700);
+    return;
+  }else{
+    $('matchCheckResult').className='dopamine-result bad';
+    $('matchCheckResult').innerHTML=`<div><h2>Kein Match</h2><p>${p.name} hätte nicht zurückgeliked. Weiter zum nächsten schnellen Impuls.</p></div>`;
+  }
+
+  state.matchCheckIndex=(state.matchCheckIndex+1)%state.queue.length;
+  updateMatchCheckStats();
+
+  setTimeout(()=>{
+    if($('matchCheck').classList.contains('active')){
+      renderMatchCheckCard();
+    }
+  },650);
+}
+
+function seedFastFoodChat(){
+  const p=state.fastFoodMatch||state.matchCheckCurrent||currentMatchCheckProfile();
+  if(!p)return;
+
+  $('fastFoodTitle').textContent=p.name+', '+p.age;
+  $('fastFoodFace').style.backgroundImage=`url('${p.avatar}')`;
+
+  if(!state.fastFoodChatSeeded){
+    $('fastFoodChatBox').innerHTML='';
+    state.fastFoodChatSeeded=true;
+    state.fastFoodInteracted=false;
+    addBubble('fastFoodChatBox','ref','Fast Food Dopamin: Ihr habt gematcht. Ihr könnt direkt schreiben, Bilder, Videos oder Voice schicken. Ohne Interaktion verschwindet das Match nach 24 Stunden.');
+    setTimeout(()=>addBubble('fastFoodChatBox','them','Hey 🙂'),500);
+  }
+
+  $('fastFoodTimer').textContent=state.fastFoodInteracted
+    ? ' Interaktion erkannt. Das Match bleibt aktiv.'
+    : ' Match verschwindet nach 24 Stunden ohne Interaktion.';
+}
+
+function sendFastFoodChat(){
+  const inp=$('fastFoodInput');
+  const text=inp.value.trim();
+  if(!text)return;
+
+  state.fastFoodInteracted=true;
+  addBubble('fastFoodChatBox','me',text);
+  inp.value='';
+  $('fastFoodTimer').textContent=' Interaktion erkannt. Das Match bleibt aktiv.';
+
+  const replies=[
+    'Haha ja 😄',
+    'Was machst du gerade?',
+    'Schick mal ein Bild 😅',
+    'Lass spontan treffen?',
+    'Okay, erzähl.'
+  ];
+
+  setTimeout(()=>addBubble('fastFoodChatBox','them',replies[Math.floor(Math.random()*replies.length)]),550);
+}
+
+function demoFastFoodExpire(){
+  $('fastFoodChatBox').innerHTML='';
+  state.fastFoodInteracted=false;
+  addBubble('fastFoodChatBox','ref','24 Stunden ohne Interaktion: Match ist verschwunden.');
+  $('fastFoodTimer').textContent=' Match abgelaufen.';
+}
+
+function updateMatchCheckStats(){
+  $('mcSeen').textContent=state.matchCheckStats.seen;
+  $('mcLikes').textContent=state.matchCheckStats.likes;
+  $('mcMatches').textContent=state.matchCheckStats.matches;
+}
+
+function startRealFlowFromCheck(){
+  state.index=state.matchCheckIndex%state.queue.length;
+  $('matchCheckResult').className='dopamine-result';
+  $('matchCheckResult').innerHTML='<p>Noch kein Like. Like ein Profil — bei Match öffnet sich der schnelle Chat.</p>';
+  show('profiles');
+}
+
+function likeProfile(){
+  state.match=state.current||currentProfile();
+  $('meFace').style.backgroundImage=`url('${state.photos[0] || avatar('me','#ff2e93','#00e5ff','DU')}')`;
+  $('themFace').style.backgroundImage=`url('${state.match.avatar}')`;
+  $('matchOverlay').classList.add('show');
+}
+
+function closeMatch(){
+  $('matchOverlay').classList.remove('show');
+  setupMatchUI();
+  show('pongIntro');
+}
+
+function setupMatchUI(){
+  const m=state.match;
+  $('pongThemName').textContent=m.name;
+  $('chatTitle').textContent=m.name+', '+m.age;
+  $('chatFace').style.backgroundImage=`url('${m.avatar}')`;
+  $('fullChatTitle').textContent=m.name+', '+m.age;
+  $('fullChatFace').style.backgroundImage=`url('${m.avatar}')`;
+}
+
+function startPong(){
+  setTimeout(()=>{
+    const canvas=$('pongCanvas'),ctx=canvas.getContext('2d'),dpr=window.devicePixelRatio||1,W=canvas.clientWidth||400,H=500;
+    canvas.width=W*dpr;
+    canvas.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    pong={
+      canvas,ctx,W,H,pw:82,ph:13,
+      me:{x:W/2-41,s:0},
+      them:{x:W/2-41,s:0},
+      ball:{x:W/2,y:H/2,vx:3,vy:4,r:8},
+      running:true
+    };
+
+    $('pongMeScore').textContent='0';
+    $('pongThemScore').textContent='0';
+
+    const setX=e=>{
+      const r=canvas.getBoundingClientRect();
+      const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+      pong.me.x=x-pong.pw/2;
+    };
+
+    canvas.onmousemove=setX;
+    canvas.ontouchmove=e=>{
+      e.preventDefault();
+      setX(e);
+    };
+
+    requestAnimationFrame(pongLoop);
+  },60);
+}
+
+function pongLoop(){
+  if(!pong||!pong.running)return;
+
+  const p=pong,ctx=p.ctx,b=p.ball;
+
+  p.me.x=Math.max(0,Math.min(p.W-p.pw,p.me.x));
+  p.them.x+=(b.x-p.pw/2-p.them.x)*.045;
+  p.them.x=Math.max(0,Math.min(p.W-p.pw,p.them.x));
+
+  b.x+=b.vx;
+  b.y+=b.vy;
+
+  if(b.x<b.r||b.x>p.W-b.r)b.vx*=-1;
+  if(b.y-b.r<24&&b.x>p.them.x&&b.x<p.them.x+p.pw&&b.vy<0)b.vy*=-1.05;
+  if(b.y+b.r>p.H-24&&b.x>p.me.x&&b.x<p.me.x+p.pw&&b.vy>0)b.vy*=-1.05;
+
+  if(b.y<0){
+    p.me.s++;
+    resetPongBall(1);
+  }
+
+  if(b.y>p.H){
+    p.them.s++;
+    resetPongBall(-1);
+  }
+
+  $('pongMeScore').textContent=p.me.s;
+  $('pongThemScore').textContent=p.them.s;
+
+  ctx.clearRect(0,0,p.W,p.H);
+  ctx.fillStyle='rgba(255,255,255,.025)';
+  ctx.fillRect(0,0,p.W,p.H);
+
+  ctx.strokeStyle='rgba(255,255,255,.12)';
+  ctx.setLineDash([6,9]);
+  ctx.beginPath();
+  ctx.moveTo(0,p.H/2);
+  ctx.lineTo(p.W,p.H/2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle='#00e5ff';
+  ctx.fillRect(p.them.x,11,p.pw,p.ph);
+  ctx.fillStyle='#ff2e93';
+  ctx.fillRect(p.me.x,p.H-p.ph-11,p.pw,p.ph);
+  ctx.fillStyle='#fff';
+  ctx.beginPath();
+  ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+  ctx.fill();
+
+  if(p.me.s>=3||p.them.s>=3){
+    p.running=false;
+    setTimeout(()=>show('firstChat'),600);
+    return;
+  }
+
+  requestAnimationFrame(pongLoop);
+}
+
+function resetPongBall(dir){
+  pong.ball.x=pong.W/2;
+  pong.ball.y=pong.H/2;
+  pong.ball.vx=(Math.random()-.5)*4;
+  pong.ball.vy=dir*(3+Math.random()*2);
+}
+
+function addBubble(box,who,text){
+  const b=document.createElement('div');
+  b.className='bubble '+who;
+  b.textContent=text;
+  $(box).appendChild(b);
+  $(box).scrollTop=$(box).scrollHeight;
+}
+
+function seedFirstChat(){
+  const box=$('chatBox');
+  box.innerHTML='';
+  state.myMessages=0;
+  state.theirMessages=0;
+  $('myMsgCount').textContent='0';
+  $('theirMsgCount').textContent='0';
+  addBubble('chatBox','ref','Pong ist vorbei. Jetzt habt ihr 15 Nachrichten je Person. Danach entscheidet ihr, wie es weitergeht.');
+  setTimeout(()=>{
+    addBubble('chatBox','them','Okay, das war schon mal besser als normales Swipen 😄');
+    state.theirMessages=1;
+    $('theirMsgCount').textContent='1';
+  },500);
+}
+
+function sendFirstChat(){
+  const inp=$('chatInput');
+  const text=inp.value.trim();
+  if(!text)return;
+
+  addBubble('chatBox','me',text);
+  inp.value='';
+  state.myMessages++;
+  $('myMsgCount').textContent=state.myMessages;
+
+  if(state.myMessages>=15&&state.theirMessages>=15){
+    finishFirstChat();
+    return;
+  }
+
+  setTimeout(()=>{
+    if(state.theirMessages<15){
+      const replies=['Haha okay.','Guter Punkt 😄','Jetzt wird es interessanter.','Ich mag die Energie.','Okay, erzähl weiter.'];
+      addBubble('chatBox','them',replies[Math.floor(Math.random()*replies.length)]);
+      state.theirMessages++;
+      $('theirMsgCount').textContent=state.theirMessages;
+      if(state.myMessages>=15&&state.theirMessages>=15)finishFirstChat();
+    }
+  },550);
+}
+
+function finishFirstChat(){
+  state.myMessages=15;
+  state.theirMessages=15;
+  $('myMsgCount').textContent='15';
+  $('theirMsgCount').textContent='15';
+  setTimeout(()=>show('decision'),400);
+}
+
+function selectSlot(btn,text){
+  document.querySelectorAll('.date-slot').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.selectedSlot=text;
+  $('confirmSlot').disabled=false;
+}
+
+function confirmDate(){
+  $('plannedTime').textContent=state.selectedSlot;
+  show('waitingDate');
+}
+
+function buildMemory(){
+  const emojis=['🔥','🎲','💬','🎧','🍕','🚀'];
+  const cards=[...emojis,...emojis].sort(()=>Math.random()-.5);
+
+  memory={open:[],done:0,tries:0,locked:false};
+
+  $('pairsFound').textContent='0';
+  $('tries').textContent='0';
+  $('memoryGrid').innerHTML='';
+
+  cards.forEach(v=>{
+    const c=document.createElement('button');
+    c.className='mem';
+    c.type='button';
+    c.dataset.v=v;
+    c.textContent='?';
+    c.onclick=()=>flipMemory(c);
+    $('memoryGrid').appendChild(c);
+  });
+}
+
+function flipMemory(c){
+  if(memory.locked||c.classList.contains('open')||c.classList.contains('done'))return;
+
+  c.classList.add('open');
+  c.textContent=c.dataset.v;
+  memory.open.push(c);
+
+  if(memory.open.length===2){
+    memory.tries++;
+    $('tries').textContent=memory.tries;
+
+    const[a,b]=memory.open;
+
+    if(a.dataset.v===b.dataset.v){
+      a.classList.add('done');
+      b.classList.add('done');
+      memory.done++;
+      $('pairsFound').textContent=memory.done;
+      memory.open=[];
+
+      if(memory.done>=6)setTimeout(()=>show('afterMemoryChoice'),700);
+    }else{
+      memory.locked=true;
+      setTimeout(()=>{
+        a.classList.remove('open');
+        b.classList.remove('open');
+        a.textContent='?';
+        b.textContent='?';
+        memory.open=[];
+        memory.locked=false;
+      },700);
+    }
+  }
+}
+
+function goFullChat(){
+  show('fullChat');
+}
+
+function seedFullChat(){
+  if(state.fullSeeded)return;
+  state.fullSeeded=true;
+  $('fullChatBox').innerHTML='';
+  addBubble('fullChatBox','ref','Voller Chat freigeschaltet: Foto, Video, Sprache und weitere Dates.');
+  addBubble('fullChatBox','them','Okay, jetzt fühlt es sich wirklich wie ein echtes Kennenlernen an.');
+}
+
+function sendFullChat(){
+  const inp=$('fullChatInput');
+  const text=inp.value.trim();
+  if(!text)return;
+
+  addBubble('fullChatBox','me',text);
+  inp.value='';
+
+  setTimeout(()=>addBubble('fullChatBox','them','Ja, genau so meinte ich das.'),550);
+}
+
+function startHockey(){
+  setTimeout(()=>{
+    const canvas=$('hockeyCanvas');
+    const ctx=canvas.getContext('2d');
+    const dpr=window.devicePixelRatio||1;
+    const W=canvas.clientWidth||400;
+    const H=540;
+
+    canvas.width=W*dpr;
+    canvas.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    hockey={
+      canvas,
+      ctx,
+      W,
+      H,
+      goalW:132,
+      goalH:18,
+      me:{x:W/2,y:H-88,r:26,s:0,tx:W/2,ty:H-88},
+      them:{x:W/2,y:88,r:26,s:0},
+      puck:{x:W/2,y:H/2,vx:0,vy:0,r:12},
+      running:true,
+      started:false,
+      countdown:3,
+      countdownStart:performance.now(),
+      serveDir:Math.random()<0.5?-1:1,
+      lastHit:0
+    };
+
+    $('hockeyMeScore').textContent='0';
+    $('hockeyThemScore').textContent='0';
+    $('hockeyComment').innerHTML='Bereit machen... <span class="air-note">Puck startet in 3 Sekunden</span>';
+
+    const setPos=e=>{
+      const r=canvas.getBoundingClientRect();
+      const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+      const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+
+      hockey.me.tx=Math.max(hockey.me.r,Math.min(hockey.W-hockey.me.r,x));
+
+      // Spieler darf nur in der unteren Hälfte spielen.
+      hockey.me.ty=Math.max(hockey.H/2+35,Math.min(hockey.H-hockey.me.r-16,y));
+    };
+
+    canvas.onmousemove=setPos;
+    canvas.ontouchmove=e=>{
+      e.preventDefault();
+      setPos(e);
+    };
+    canvas.ontouchstart=e=>{
+      e.preventDefault();
+      setPos(e);
+    };
+
+    requestAnimationFrame(hockeyLoop);
+  },60);
+}
+
+function hockeyLoop(){
+  if(!hockey||!hockey.running)return;
+
+  const p=hockey;
+  const ctx=p.ctx;
+  const puck=p.puck;
+
+  // Smooth movement for player striker
+  p.me.x+=(p.me.tx-p.me.x)*0.35;
+  p.me.y+=(p.me.ty-p.me.y)*0.35;
+
+  // AI striker only moves in upper half and tracks the puck
+  const targetX=puck.x;
+  const targetY=Math.min(p.H/2-35,Math.max(54,puck.y-42));
+  p.them.x+=(targetX-p.them.x)*0.045;
+  p.them.y+=(targetY-p.them.y)*0.035;
+  p.them.x=Math.max(p.them.r,Math.min(p.W-p.them.r,p.them.x));
+  p.them.y=Math.max(p.them.r+18,Math.min(p.H/2-35,p.them.y));
+
+  if(!p.started){
+    const elapsed=performance.now()-p.countdownStart;
+    const remaining=Math.max(0,3-Math.floor(elapsed/1000));
+    p.countdown=remaining;
+    puck.x=p.W/2;
+    puck.y=p.H/2;
+    puck.vx=0;
+    puck.vy=0;
+
+    drawAirHockey();
+
+    if(elapsed>=3000){
+      p.started=true;
+      p.countdown=0;
+      puck.vx=(Math.random()-.5)*4;
+      puck.vy=(p.serveDir||1)*4.2;
+      $('hockeyComment').innerHTML='GO! <span class="air-note">Tor oben treffen!</span>';
+      setTimeout(()=>{
+        if($('airhockey').classList.contains('active')){
+          $('hockeyComment').innerHTML='Zieh den Schläger unten. <span class="air-note">Tor oben treffen!</span>';
+        }
+      },800);
+    }
+
+    requestAnimationFrame(hockeyLoop);
+    return;
+  }
+
+  // Puck physics
+  puck.x+=puck.vx;
+  puck.y+=puck.vy;
+
+  // friction
+  puck.vx*=0.997;
+  puck.vy*=0.997;
+
+  // minimum energy so game does not die
+  const speed=Math.hypot(puck.vx,puck.vy);
+  if(speed<2.2){
+    puck.vx*=1.03;
+    puck.vy*=1.03;
+  }
+
+  const goalLeft=(p.W-p.goalW)/2;
+  const goalRight=(p.W+p.goalW)/2;
+
+  // side walls
+  if(puck.x-puck.r<0){
+    puck.x=puck.r;
+    puck.vx=Math.abs(puck.vx);
+  }
+  if(puck.x+puck.r>p.W){
+    puck.x=p.W-puck.r;
+    puck.vx=-Math.abs(puck.vx);
+  }
+
+  // top/bottom walls except goal opening
+  const inGoalX=puck.x>goalLeft&&puck.x<goalRight;
+
+  if(puck.y-puck.r<0){
+    if(inGoalX){
+      p.me.s++;
+      $('hockeyMeScore').textContent=p.me.s;
+      goalFlash('Du triffst! 🔥');
+      resetHockeyPuck(1);
+    }else{
+      puck.y=puck.r;
+      puck.vy=Math.abs(puck.vy);
+    }
+  }
+
+  if(puck.y+puck.r>p.H){
+    if(inGoalX){
+      p.them.s++;
+      $('hockeyThemScore').textContent=p.them.s;
+      goalFlash('Gegner trifft. Revanche holen! ⚡');
+      resetHockeyPuck(-1);
+    }else{
+      puck.y=p.H-puck.r;
+      puck.vy=-Math.abs(puck.vy);
+    }
+  }
+
+  collideStriker(p.me,puck,1.22);
+  collideStriker(p.them,puck,1.12);
+
+  drawAirHockey();
+
+  if(p.me.s>=5||p.them.s>=5){
+    p.running=false;
+    setTimeout(()=>show('aftergame'),750);
+    return;
+  }
+
+  requestAnimationFrame(hockeyLoop);
+}
+
+function collideStriker(striker,puck,power){
+  const dx=puck.x-striker.x;
+  const dy=puck.y-striker.y;
+  const dist=Math.hypot(dx,dy);
+  const minDist=striker.r+puck.r;
+
+  if(dist>0&&dist<minDist){
+    const nx=dx/dist;
+    const ny=dy/dist;
+    const overlap=minDist-dist;
+
+    puck.x+=nx*overlap;
+    puck.y+=ny*overlap;
+
+    const hitSpeed=Math.max(4.2,Math.hypot(puck.vx,puck.vy)*power);
+    puck.vx=nx*hitSpeed;
+    puck.vy=ny*hitSpeed;
+
+    // Player gets a stronger shot if striker is moving toward the puck
+    if(striker===hockey.me){
+      const moveBoost=Math.hypot(hockey.me.tx-hockey.me.x,hockey.me.ty-hockey.me.y)*0.045;
+      puck.vx+=nx*moveBoost;
+      puck.vy+=ny*moveBoost;
+    }
+  }
+}
+
+function drawAirHockey(){
+  const p=hockey;
+  const ctx=p.ctx;
+  const puck=p.puck;
+  const goalLeft=(p.W-p.goalW)/2;
+
+  ctx.clearRect(0,0,p.W,p.H);
+
+  // table
+  const grad=ctx.createLinearGradient(0,0,0,p.H);
+  grad.addColorStop(0,'rgba(0,229,255,.08)');
+  grad.addColorStop(.5,'rgba(255,255,255,.025)');
+  grad.addColorStop(1,'rgba(255,46,147,.08)');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,p.W,p.H);
+
+  // outer border
+  ctx.strokeStyle='rgba(255,255,255,.16)';
+  ctx.lineWidth=2;
+  ctx.strokeRect(18,18,p.W-36,p.H-36);
+
+  // center line and circle
+  ctx.strokeStyle='rgba(255,255,255,.14)';
+  ctx.lineWidth=1;
+  ctx.beginPath();
+  ctx.moveTo(18,p.H/2);
+  ctx.lineTo(p.W-18,p.H/2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(p.W/2,p.H/2,58,0,Math.PI*2);
+  ctx.stroke();
+
+  // goals
+  ctx.fillStyle='rgba(0,229,255,.18)';
+  ctx.fillRect(goalLeft,0,p.goalW,p.goalH);
+  ctx.fillStyle='rgba(255,46,147,.18)';
+  ctx.fillRect(goalLeft,p.H-p.goalH,p.goalW,p.goalH);
+
+  ctx.strokeStyle='rgba(0,229,255,.75)';
+  ctx.strokeRect(goalLeft,0,p.goalW,p.goalH);
+  ctx.strokeStyle='rgba(255,46,147,.75)';
+  ctx.strokeRect(goalLeft,p.H-p.goalH,p.goalW,p.goalH);
+
+  // AI striker
+  drawDisc(p.them.x,p.them.y,p.them.r,'#00e5ff','rgba(0,229,255,.28)');
+
+  // Player striker
+  drawDisc(p.me.x,p.me.y,p.me.r,'#ff2e93','rgba(255,46,147,.30)');
+
+  // puck
+  drawDisc(puck.x,puck.y,puck.r,'#ffffff','rgba(255,255,255,.25)');
+
+  // small puck shine
+  ctx.fillStyle='rgba(0,0,0,.35)';
+  ctx.beginPath();
+  ctx.arc(puck.x+3,puck.y+3,4,0,Math.PI*2);
+  ctx.fill();
+
+  if(!p.started){
+    ctx.save();
+    ctx.fillStyle='rgba(0,0,0,.42)';
+    ctx.fillRect(0,0,p.W,p.H);
+
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.shadowColor='rgba(255,255,255,.45)';
+    ctx.shadowBlur=18;
+
+    ctx.fillStyle='white';
+    ctx.font='900 72px Arial';
+
+    const label=p.countdown>0 ? String(p.countdown) : 'GO';
+    ctx.fillText(label,p.W/2,p.H/2-12);
+
+    ctx.shadowBlur=0;
+    ctx.font='800 15px Arial';
+    ctx.fillStyle='rgba(255,255,255,.78)';
+    ctx.fillText('Mach dich bereit',p.W/2,p.H/2+48);
+    ctx.restore();
+  }
+}
+
+function drawDisc(x,y,r,color,glow){
+  const ctx=hockey.ctx;
+  ctx.shadowColor=glow;
+  ctx.shadowBlur=18;
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.shadowBlur=0;
+  ctx.strokeStyle='rgba(255,255,255,.45)';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(x,y,r-3,0,Math.PI*2);
+  ctx.stroke();
+}
+
+function resetHockeyPuck(dir){
+  const p=hockey;
+  p.puck.x=p.W/2;
+  p.puck.y=p.H/2;
+  p.puck.vx=0;
+  p.puck.vy=0;
+  p.me.x=p.W/2;
+  p.me.y=p.H-88;
+  p.me.tx=p.W/2;
+  p.me.ty=p.H-88;
+  p.them.x=p.W/2;
+  p.them.y=88;
+
+  p.started=false;
+  p.countdown=3;
+  p.countdownStart=performance.now();
+  p.serveDir=dir;
+
+  if($('airhockey').classList.contains('active')){
+    $('hockeyComment').innerHTML='Neuer Puck in 3 Sekunden... <span class="air-note">Bereit machen</span>';
+  }
+}
+
+function goalFlash(text){
+  $('hockeyComment').textContent=text;
+  setTimeout(()=>{
+    if($('airhockey').classList.contains('active')){
+      $('hockeyComment').innerHTML='Zieh den Schläger unten. <span class="air-note">Tor oben treffen!</span>';
+    }
+  },850);
+}
+
+function seedAftergame(){
+  $('aftergameBox').innerHTML='';
+  $('groupMatchName').textContent = state.match ? state.match.name : 'Match';
+  addBubble('aftergameBox','ref','4er-Chat gestartet. Ihr könnt kurz reagieren, witzeln und danach wieder privat weiterreden.');
+  addBubble('aftergameBox','them','Nina: Okay, das war knapper als gedacht 😂');
+  addBubble('aftergameBox','them','Tom: Revanche irgendwann?');
+  if(state.match){
+    addBubble('aftergameBox','them',state.match.name+': Ich sag nur: Teamwork war zumindest... kreativ 😄');
+  }
+}
+
+function sendAftergame(){
+  const inp=$('aftergameInput');
+  const text=inp.value.trim();
+  if(!text)return;
+
+  addBubble('aftergameBox','me',text);
+  inp.value='';
+
+  const groupReplies=[
+    'Nina: Haha fair 😄',
+    'Tom: Okay, das zählt als Ansage.',
+    (state.match?state.match.name:'Match')+': Ich bin dafür, wir machen nochmal Revanche.',
+    'Nina: Ihr zwei seid schon bisschen eingespielt 😂'
+  ];
+
+  setTimeout(()=>{
+    addBubble('aftergameBox','them',groupReplies[Math.floor(Math.random()*groupReplies.length)]);
+  },550);
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;
+  if(document.activeElement===$('chatInput'))sendFirstChat();
+  if(document.activeElement===$('fullChatInput'))sendFullChat();
+  if(document.activeElement===$('aftergameInput'))sendAftergame();
+  if(document.activeElement===$('fastFoodInput'))sendFastFoodChat();
+});
+
+function resetDemo(){
+  location.reload();
+}
+</script>
+</body>
+</html>
